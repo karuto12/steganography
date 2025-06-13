@@ -91,9 +91,9 @@ mod tests {
         let args = parse_args(&[
             "--img", "test.png", 
             "--msg", "Hello, World!", 
-            "--out", "output.png"]);        
+            "--out", "output.png"]); 
         assert_eq!(args.img, "test.png");
-        assert_eq!(args.msg, "Hello, World!");
+        assert_eq!(args.msg, Some("Hello, World!".to_string()));
         assert_eq!(args.out, "output.png");
     }
 
@@ -148,7 +148,7 @@ mod tests {
             "--seed", "54321",
         ]);
         assert_eq!(args.img, "test.png");
-        assert_eq!(args.msg, "Full Test Message");
+        assert_eq!(args.msg, Some("Full Test Message".to_string()));
         assert_eq!(args.out, "output.png");
         assert_eq!(args.encrypt, "aes");
         assert_eq!(args.key, "supersecretkey");

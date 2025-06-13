@@ -1,13 +1,13 @@
-# 🖼️ cryimg - Image Steganography in Rust
+# 🖼️ steganography - Image Steganography in Rust
 
-`cryimg` is a Rust-based CLI tool that hides encrypted messages inside images using LSB (Least Significant Bit) steganography. It supports optional encryption algorithms (like XOR), and allows deterministic or randomized bit placement using a PRNG seed.
+`steganography` (formerly `cryimg`) is a Rust-based CLI tool that hides encrypted messages inside images using LSB (Least Significant Bit) steganography. It supports optional encryption algorithms (like XOR), and allows deterministic or randomized bit placement using a PRNG seed.
 
 ---
 
 ## 🚀 Features
 
 - 🧊 Embed and extract messages in `.jpg`, `.jpeg`, and `.png` images
-- 🔐 Optional message encryption (XOR currently supported)
+- 🔐 Optional message encryption (XOR currently tested)
 - 🎲 Deterministic pseudo-random embedding with seed support
 - 📁 Batch embedding for multiple test images
 - 🧪 Built-in test suite for validation

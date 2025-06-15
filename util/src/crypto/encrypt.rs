@@ -35,16 +35,15 @@ pub fn caesar_encrypt(msg: &str, key: &str) -> Result<String, String> {
     Ok(encrypted)
 }
 
-pub fn rot13_encrypt(msg: &str) -> String {
+pub fn rot13_encrypt(msg: &str) -> Result<String, String> {
     msg.chars()
         .map(|c| match c {
-            'a'..='z' => (((c as u8 - b'a' + 13) % 26) + b'a') as char,
-            'A'..='Z' => (((c as u8 - b'A' + 13) % 26) + b'A') as char,
-            _ => c,
+            'a'..='z' => Ok((((c as u8 - b'a' + 13) % 26) + b'a') as char),
+            'A'..='Z' => Ok((((c as u8 - b'A' + 13) % 26) + b'A') as char),
+            _ => Ok(c),
         })
         .collect()
 }
-
 
 pub fn aes_encrypt(msg: &str, key: &str) -> Result<String, String> {
     if key.is_empty() {
@@ -83,7 +82,7 @@ mod tests {
     use crate::crypto::decrypt::*;
 
     #[test]
-    fn test_xor_encrypt() {
+    fn encrypt_xor_encrypt() {
         let msg = "Hello, World!";
         let key = "key";
         let encrypted = xor_encrypt(msg, key).unwrap();
@@ -92,7 +91,7 @@ mod tests {
     }
 
     #[test]
-    fn test_caesar_encrypt() {
+    fn encrypt_caesar_encrypt() {
         let msg = "Hello, World!";
         let key = "3";
         let encrypted = caesar_encrypt(msg, key).unwrap();
@@ -101,15 +100,15 @@ mod tests {
     }
 
     #[test]
-    fn test_rot13_encrypt() {
+    fn encrypt_rot13_encrypt() {
         let msg = "Hello, World!";
-        let encrypted = rot13_encrypt(msg);
-        let decrypted = rot13_decrypt(&encrypted);
+        let encrypted = rot13_encrypt(msg).unwrap();
+        let decrypted = rot13_decrypt(&encrypted).unwrap();
         assert_eq!(decrypted, msg);
     }
 
     #[test]
-    fn test_xor_encrypt_empty_key() {
+    fn encrypt_xor_encrypt_empty_key() {
         let msg = "Hello, World!";
         let key = "";
         let result = xor_encrypt(msg, key);
@@ -118,7 +117,7 @@ mod tests {
     }
 
     #[test]
-    fn test_caesar_encrypt_invalid_key() {
+    fn encrypt_caesar_encrypt_invalid_key() {
         let msg = "Hello, World!";
         let key = "invalid";
         let result = caesar_encrypt(msg, key);
@@ -127,7 +126,7 @@ mod tests {
     }
 
     #[test]
-    fn test_aes_encrypt() {
+    fn encrypt_aes_encrypt() {
         let msg = "Hello, World!";
         let key = "mysecretkey";
         let encrypted = aes_encrypt(msg, key).unwrap();

@@ -8,7 +8,7 @@ use decrypt::*;
 
 
 /// Supported encryption algorithms
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum Algorithm {
     None,
     Xor,
@@ -40,7 +40,7 @@ pub fn encrypt_message(msg: &str, key: &str, algo: Algorithm) -> Result<String, 
         Algorithm::None => Ok(msg.to_string()),
         Algorithm::Xor => xor_encrypt(msg, key),
         Algorithm::Caesar => caesar_encrypt(msg, key),
-        Algorithm::Rot13 => Ok(encrypt::rot13_encrypt(msg)),
+        Algorithm::Rot13 => rot13_encrypt(msg),
         Algorithm::Aes => aes_encrypt(msg, key),
     }
 }
@@ -51,7 +51,7 @@ pub fn decrypt_message(cipher: &str, key: &str, algo: Algorithm) -> Result<Strin
         Algorithm::None => Ok(cipher.to_string()),
         Algorithm::Xor => xor_decrypt(cipher, key),
         Algorithm::Caesar => caesar_decrypt(cipher, key),
-        Algorithm::Rot13 => Ok(decrypt::rot13_decrypt(cipher)),
+        Algorithm::Rot13 => rot13_decrypt(cipher),
         Algorithm::Aes => aes_decrypt(cipher, key),
     }
 }
@@ -62,7 +62,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_encrypt_decrypt_aes() {
+    fn crypto_encrypt_decrypt_aes() {
         let msg = "Hello, World!";
         let key = "mysecretkey";
         let algo = Algorithm::Aes;
@@ -73,7 +73,7 @@ mod tests {
         assert_eq!(decrypted, msg);
     }
     #[test]
-    fn test_encrypt_decrypt_xor() {
+    fn crypto_encrypt_decrypt_xor() {
         let msg = "Hello, World!";
         let key = "key";
         let algo = Algorithm::Xor;
@@ -84,7 +84,7 @@ mod tests {
         assert_eq!(decrypted, msg);
     }
     #[test]
-    fn test_encrypt_decrypt_caesar() {
+    fn crypto_encrypt_decrypt_caesar() {
         let msg = "Hello, World!";
         let key = "3"; // Shift by 3
         let algo = Algorithm::Caesar;
@@ -95,7 +95,7 @@ mod tests {
         assert_eq!(decrypted, msg);
     }
     #[test]
-    fn test_encrypt_decrypt_rot13() {
+    fn crypto_encrypt_decrypt_rot13() {
         let msg = "Hello, World!";
         let algo = Algorithm::Rot13;
 
@@ -105,7 +105,7 @@ mod tests {
         assert_eq!(decrypted, msg);
     }
     #[test]
-    fn test_encrypt_decrypt_none() {
+    fn crypto_encrypt_decrypt_none() {
         let msg = "Hello, World!";
         let algo = Algorithm::None;
 
@@ -115,7 +115,7 @@ mod tests {
         assert_eq!(decrypted, msg);
     }
     #[test]
-    fn test_invalid_algorithm() -> Result<(), String> {
+    fn crypto_invalid_algorithm() -> Result<(), String> {
         match Algorithm::from_str("invalid") {
             Ok(algorithm) => {
                 panic!("Expected error for invalid algorithm, but got: {:?}", algorithm);
@@ -129,7 +129,7 @@ mod tests {
 
 
     #[test]
-    fn test_encrypt_with_empty_key() {
+    fn crypto_encrypt_with_empty_key() {
         let msg = "Hello, World!";
         let algo = Algorithm::Xor;
 
@@ -139,7 +139,7 @@ mod tests {
     }
 
     #[test]
-    fn test_decrypt_with_empty_key() {
+    fn crypto_decrypt_with_empty_key() {
         let msg = "Hello, World!";
         let key = "secret";
         let algo = Algorithm::Xor;
@@ -154,7 +154,7 @@ mod tests {
     }
 
     #[test]
-    fn test_caesar_encrypt_invalid_key() {
+    fn crypto_caesar_encrypt_invalid_key() {
         let msg = "Hello, World!";
         let key = "invalid"; // Non-numeric key
         let algo = Algorithm::Caesar;

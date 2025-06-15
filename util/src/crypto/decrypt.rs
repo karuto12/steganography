@@ -38,7 +38,7 @@ pub fn caesar_decrypt(msg: &str, key: &str) -> Result<String, String> {
     Ok(decrypted)
 }
 
-pub fn rot13_decrypt(msg: &str) -> String {
+pub fn rot13_decrypt(msg: &str) -> Result<String, String> {
     super::encrypt::rot13_encrypt(msg)
 }
 
@@ -79,7 +79,7 @@ mod tests {
     use crate::crypto::encrypt::*;
 
     #[test]
-    fn test_xor_decrypt() {
+    fn decrypt_xor_decrypt() {
         let msg = "Hello, World!";
         let key = "key";
         let encrypted = xor_encrypt(msg, key).unwrap();
@@ -87,20 +87,20 @@ mod tests {
         assert_eq!(decrypted, msg);
     }
     #[test]
-    fn test_caesar_decrypt() {
+    fn decrypt_caesar_decrypt() {
         let msg = "Khoor, Zruog!";
         let key = "3";
         let decrypted = caesar_decrypt(msg, key).unwrap();
         assert_eq!(decrypted, "Hello, World!");
     }
     #[test]
-    fn test_rot13_decrypt() {
+    fn decrypt_rot13_decrypt() {
         let msg = "Uryyb, Jbeyq!";
-        let decrypted = rot13_decrypt(msg);
+        let decrypted = rot13_decrypt(msg).unwrap();
         assert_eq!(decrypted, "Hello, World!");
     }
     #[test]
-    fn test_aes_decrypt() {
+    fn decrypt_aes_decrypt() {
         let msg = "Hello, World!";
         let key = "mysecretkey";
         let encrypted = aes_encrypt(msg, key).unwrap();
@@ -108,7 +108,7 @@ mod tests {
         assert_eq!(decrypted, msg);
     }
     #[test]
-    fn test_xor_decrypt_empty_key() {
+    fn decrypt_xor_decrypt_empty_key() {
         let msg = "Hello, World!";
         let encrypted = aes_encrypt(msg, "mysecretkey").unwrap();
         let key = "";
@@ -117,7 +117,7 @@ mod tests {
         assert_eq!(result.unwrap_err(), "XOR decryption requires a non-empty key");
     }
     #[test]
-    fn test_caesar_decrypt_invalid_key() {
+    fn decrypt_caesar_decrypt_invalid_key() {
         let msg = "Khoor, Zruog!";
         let key = "invalid";
         let result = caesar_decrypt(msg, key);

@@ -72,8 +72,8 @@ mod tests {
         let img = DynamicImage::new_rgb8(10, 10); // Create a dummy image
         let message = args.msg.as_ref().unwrap();
         let algorithm = args.algorithm().unwrap();
-        let key = args.key.as_str();
-        
+        let key_val = args.key.unwrap_or_default();
+        let key = key_val.as_str();
 
         let report = analyze_capacity(&img, message, algorithm, key).unwrap();
 
@@ -95,7 +95,8 @@ mod tests {
         let img = DynamicImage::new_rgb8(10, 10); // Create a dummy image
         let message = args.msg.as_ref().unwrap();
         let algorithm = args.algorithm().unwrap();
-        let key = args.key.as_str();
+        let key_val = args.key.unwrap();
+        let key = key_val.as_str();
 
         let report = analyze_capacity(&img, message, algorithm, key).unwrap();
 
@@ -117,7 +118,8 @@ mod tests {
         let img = DynamicImage::new_rgb8(10, 10); // Create a dummy image
         let message = args.msg.as_ref().unwrap();
         let algorithm = args.algorithm().unwrap();
-        let key = args.key.as_str();
+        let key_val = args.key.unwrap();
+        let key = key_val.as_str();
 
         let report = analyze_capacity(&img, message, algorithm, key).unwrap();
 
@@ -139,7 +141,8 @@ mod tests {
         let img = DynamicImage::new_rgb8(10, 10); // Create a dummy image
         let message = args.msg.as_ref().unwrap();
         let algorithm = args.algorithm().unwrap();
-        let key = args.key.as_str();
+        let key_val = args.key.unwrap();
+        let key = key_val.as_str();
 
         let report = analyze_capacity(&img, message, algorithm, key).unwrap();
 
@@ -161,7 +164,8 @@ mod tests {
         let img = DynamicImage::new_rgb8(10, 10); // Create a dummy image
         let message = args.msg.as_ref().unwrap();
         let algorithm = args.algorithm().unwrap();
-        let key = args.key.as_str();
+        let key_val = args.key.unwrap();
+        let key = key_val.as_str();
 
         let report = analyze_capacity(&img, message, algorithm, key).unwrap();
 

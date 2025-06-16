@@ -29,7 +29,7 @@ fn main() {
             &img,
             args.msg.as_deref().unwrap_or(""),
             algo,
-            &args.key,
+            args.key.as_deref().unwrap_or(""),
         ).unwrap_or_else(|e| {
             eprintln!("Analysis failed: {e}");
             std::process::exit(1);
@@ -87,7 +87,7 @@ fn main() {
                 std::process::exit(1);
             }
         };
-        let encrypted = match encrypt_message(&plain_msg, &args.key, algo) {
+        let encrypted = match encrypt_message(&plain_msg, args.key.as_deref().unwrap_or(""), algo) {
             Ok(msg) => msg,
             Err(e) => {
                 eprintln!("Encryption failed: {e}");
@@ -125,7 +125,7 @@ fn main() {
 
         println!("🕵️ Extracted (raw): {extracted}");
 
-        let final_msg = match decrypt_message(&extracted, &args.key, algo) {
+        let final_msg = match decrypt_message(&extracted, args.key.as_deref().unwrap_or(""), algo) {
             Ok(msg) => msg,
             Err(e) => {
                 eprintln!("Decryption failed: {e}");

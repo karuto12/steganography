@@ -7,9 +7,8 @@
 ## 🚀 Features
 
 - 🧊 Embed and extract messages in `.jpg`, `.jpeg`, and `.png` images
-- 🔐 Optional message encryption (XOR currently tested)
+- 🔐 Optional message encryption (XOR, AES, Caesar, Rot13, None)
 - 🎲 Deterministic pseudo-random embedding with seed support
-- 📁 Batch embedding for multiple test images
 - 🧪 Built-in test suite for validation
 
 ---
@@ -19,35 +18,45 @@
 
 ### 1. 📥 Build the project
 ```bash
-cargo build
+cargo build --release
 ```
 
-### 2. 🖊️ Embed a message
+### 2. Get help
 ```bash
-cargo run --bin cimg -- \
-  --mode embed \
-  --img imgs/i1.jpeg \
-  --msg "Secret Message" \
-  --out outs/stego_i1.jpeg \
-  --encrypt xor \
-  --key mysecretkey \
-  --prng \
-  --seed "some-seed"
+cargo run -- -h
 ```
+
+### 3. 🖊️ Embed a message
+```bash
+cargo run -- --img <image-path> --msg <"your msg here"> --out <output-path.png> \
+--encrypt <encryption-algo> --key <your-key> --prng --seed <your-seed-for-prng>
+```
+
+or 
+
+```bash
+./target/release/cimg  --img <image-path> --msg <"your msg here"> --out <output-path.png> \
+--encrypt <encryption-algo> --key <your-key> --prng --seed <your-seed-for-prng>
+```
+- note: use `-h` for more help
 
 ### 3. 🔍 Decrypt the message
 ```bash
-cargo run --bin cimg -- \
-  --mode decrypt \
-  --img outs/stego_i1.jpeg \
-  --out output.txt \
-  --encrypt xor \
-  --key mysecretkey \
-  --prng \
-  --seed "some-seed"
+cargo run -- -i <encrypted-image-path> --decrypt <decryption-algo> --key <your-key> --prng --seed <your-seed-for-prng>
+```
+
+or
+
+```bash
+./target/release/cimg -i <encrypted-image-path> --decrypt <decryption-algo> --key <your-key> --prng --seed <your-seed-for-prng>
 ```
 
 ## 🧪 Run Built-in Tests
 ```rust
 cargo test
 ```
+
+
+## Try to decrypt my maessage
+![my-message](noseed/thewillofd.png)
+- `hint`: `no...` hint for you (iykyk).

@@ -35,6 +35,16 @@ pub fn extract_message(
     let len_bits = &bits[0..32];
     let msg_len = bits_to_u32(len_bits)? as usize;
 
+    if msg_len > 1_000_000_000 {
+        eprintln!("⚠️ Warning: Unrealistic message length detected: {} bits. Proceeding anyway...", msg_len);
+    }
+
+    if 32 + msg_len > bits.len() {
+        return Err(format!(
+            "Message length ({msg_len} bits) exceeds available data ({} bits)",
+            bits.len() - 32
+        ));
+    }
     let msg_bits = &bits[32..(32 + msg_len)];
     Ok(bits_to_message(msg_bits))
 }

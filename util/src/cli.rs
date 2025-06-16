@@ -1,6 +1,5 @@
 use clap::{Parser, ArgGroup};
 use crate::crypto::Algorithm;
-use std::str::FromStr;
 
 
 /// 🔐 Embed secret messages in images using LSB steganography.
@@ -26,16 +25,16 @@ pub struct Args {
     pub out: String,
 
     /// 🔒 Encryption algorithm: none | xor | caesar | rot13 | aes
-    #[arg(short, long, help = "Encryption method (default: none)")]
-    pub encrypt: Option<String>,
+    #[arg(short, long, help = "Encryption algorithm")]
+    pub encrypt: Option<Algorithm>,
     
     /// 🔒 Decryption algorithm: none | xor | caesar | rot13 | aes
-    #[arg(short, long, help = "Decryption method (default: none)")]
-    pub decrypt: Option<String>,
+    #[arg(short, long, help = "Decryption algorithm")]
+    pub decrypt: Option<Algorithm>,
 
     /// 🔑 Key for encryption
-    #[arg(long, default_value = "", help = "Key for encryption/decryption (if applicable)")]
-    pub key: String,
+    #[arg(long, help = "Key for encryption/decryption (if applicable)")]
+    pub key: Option<String>,
 
     /// 🎲 Use pseudorandom embedding order
     #[arg(long, help = "Enable PRNG-based pixel scrambling")]
@@ -53,9 +52,10 @@ pub struct Args {
 impl Args {
     pub fn algorithm(&self) -> Result<Algorithm, String> {
         match (&self.encrypt, &self.decrypt) {
-            (Some(e), None) => Algorithm::from_str(e),
-            (None, Some(d)) => Algorithm::from_str(d),
-            _ => Err("Either --encrypt or --decrypt must be set, not both.".to_string()),
+            (Some(e), None) => Ok(e.clone()),
+            (None, Some(d)) => Ok(d.clone()),
+            (Some(_), Some(_)) => Err("Cannot specify both --encrypt and --decrypt.".into()),
+            (None, None) => Err("Either --encrypt or --decrypt must be specified.".into()),
         }
     }
 
@@ -68,7 +68,7 @@ impl Args {
         // Validate algorithm and key requirement
         let algo = self.algorithm()?;
 
-        if matches!(algo, Algorithm::Xor | Algorithm::Caesar | Algorithm::Aes) && self.key.is_empty() {
+        if matches!(algo, Algorithm::Xor | Algorithm::Caesar | Algorithm::Aes) && self.key.is_none() {
             return Err(format!("Encryption algorithm '{:?}' requires a non-empty key.", algo));
         }
 
@@ -82,22 +82,29 @@ mod tests {
     use super::*;
     use clap::Parser;
 
-    fn parse_args(args: &[&str]) -> Args {
-        Args::parse_from(std::iter::once("cimg").chain(args.iter().cloned()))
-    }
+    fn parse_args<I>(args: I) -> Result<Args, clap::Error>
+        where
+            I: IntoIterator,
+            I::Item: AsRef<str>,
+        {
+            let argv: Vec<String> = std::iter::once("cimg".to_string())
+                .chain(args.into_iter().map(|s| s.as_ref().to_string()))
+                .collect();
+            Args::try_parse_from(argv)
+        }
     #[test]
     fn cli_basic_args() {
         let args = parse_args(&[
             "--img", "test.png", 
             "--msg", "Hello, World!",
             "--encrypt", "none",
-        ]);
+        ]).unwrap();
         assert_eq!(args.img, "test.png");
         assert_eq!(args.msg.clone().unwrap(), "Hello, World!");
         assert_eq!(args.out, "output.png");
         assert_eq!(args.algorithm().unwrap(), Algorithm::None);
         assert_eq!(args.decrypt, None);
-        assert_eq!(args.key, "");
+        assert_eq!(args.key.unwrap_or_default(), "");
         assert!(!args.prng);
         assert_eq!(args.seed, "");
     }
@@ -110,9 +117,9 @@ mod tests {
             "--out", "output.png",
             "--encrypt", "xor",
             "--key", "mysecretkey",
-        ]);
+        ]).unwrap();
         assert_eq!(args.algorithm().unwrap(), Algorithm::Xor);
-        assert_eq!(args.key, "mysecretkey");
+        assert_eq!(args.key.unwrap(), "mysecretkey");
     }
 
     #[test]
@@ -124,7 +131,7 @@ mod tests {
             "--prng",
             "--seed", "12345",
             "--encrypt", "none",
-        ]);
+        ]).unwrap();
         assert!(args.prng);
         assert_eq!(args.seed, "12345");
     }
@@ -136,9 +143,9 @@ mod tests {
             "--msg", "Default Test",
             "--decrypt", "xor",
             "--key", "mysecretkey",
-        ]);
+        ]).unwrap();
         assert_eq!(args.algorithm().unwrap(), Algorithm::Xor);
-        assert_eq!(args.key, "mysecretkey");
+        assert_eq!(args.key.unwrap(), "mysecretkey");
     }
 
     #[test]
@@ -151,12 +158,12 @@ mod tests {
             "--key", "supersecretkey",
             "--prng",
             "--seed", "54321",
-        ]);
+        ]).unwrap();
         assert_eq!(args.img, "test.png");
         assert_eq!(args.msg.clone().unwrap(), "Full Test Message");
         assert_eq!(args.out, "output.png");
         assert_eq!(args.algorithm().unwrap(), Algorithm::Aes);
-        assert_eq!(args.key, "supersecretkey");
+        assert_eq!(args.key.unwrap(), "supersecretkey");
         assert!(args.prng);
         assert_eq!(args.seed, "54321");
     }
@@ -178,7 +185,7 @@ mod tests {
             "--img", "test.png",
             "--msg", "Oops",
             "--encrypt", "xor",
-        ]);
+        ]).unwrap();
         let result = args.validate();
         assert!(result.is_err());
         assert_eq!(result.unwrap_err(), "Encryption algorithm 'Xor' requires a non-empty key.");
@@ -191,7 +198,7 @@ mod tests {
             "--msg", "Oops",
             "--prng",
             "--encrypt", "none",
-        ]);
+        ]).unwrap();
         let result = args.validate();
         assert!(result.is_err());
         assert_eq!(result.unwrap_err(), "PRNG is enabled, but seed is missing. Provide a seed using --seed.");
@@ -204,9 +211,9 @@ mod tests {
             "--msg", "Invalid Algorithm",
             "--encrypt", "invalid_algo",
         ]);
-        let result = args.algorithm();
-        assert!(result.is_err());
-        assert_eq!(result.unwrap_err(), "Unsupported algorithm: invalid_algo");
+        assert!(args.is_err());
+        let err = args.unwrap_err().to_string();
+        assert!(err.contains("Unsupported algorithm: invalid_algo"));
     }
 
     #[test]
@@ -228,7 +235,7 @@ mod tests {
             "--msg", "Analyze Test",
             "--encrypt", "none",
             "--analyze",
-        ]);
+        ]).unwrap();
         assert!(args.analyze);
     }
     

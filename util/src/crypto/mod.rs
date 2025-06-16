@@ -8,7 +8,7 @@ use decrypt::*;
 
 
 /// Supported encryption algorithms
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, clap::ValueEnum)]
 pub enum Algorithm {
     None,
     Xor,
@@ -17,22 +17,20 @@ pub enum Algorithm {
     Aes,
 }
 
-
 impl FromStr for Algorithm {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_lowercase().as_str() {
+            "none" => Ok(Algorithm::None),
             "xor" => Ok(Algorithm::Xor),
             "caesar" => Ok(Algorithm::Caesar),
             "rot13" => Ok(Algorithm::Rot13),
             "aes" => Ok(Algorithm::Aes),
-            "" | "none" => Ok(Algorithm::None),
-            _ => Err(format!("Unsupported algorithm: {}", s)),
+            other => Err(format!("Unsupported algorithm: {}", other)),
         }
     }
 }
-
 
 /// Encrypt a message using the given algorithm and key
 pub fn encrypt_message(msg: &str, key: &str, algo: Algorithm) -> Result<String, String> {

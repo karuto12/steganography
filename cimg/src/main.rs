@@ -1,6 +1,11 @@
 use clap::Parser;
 
-use util::{cli::{Args}, crypto::encrypt_message, crypto::decrypt_message, stegano, utils::string_to_seed};
+use util::{
+    cli::{Args}, 
+    crypto::{encrypt_message, decrypt_message}, 
+    stegano, 
+    utils::string_to_seed
+};
 
 fn main() {
     let args = Args::parse();
@@ -15,6 +20,66 @@ fn main() {
 
     if let Some(_) = args.encrypt {
         // Encrypt mode
+        let img = image::open(&args.img).unwrap_or_else(|e| {
+            eprintln!("Failed to open image: {e}");
+            std::process::exit(1);
+        });
+
+        let analysis = stegano::analyze::analyze_capacity(
+            &img,
+            args.msg.as_deref().unwrap_or(""),
+            algo,
+            &args.key,
+        ).unwrap_or_else(|e| {
+            eprintln!("Analysis failed: {e}");
+            std::process::exit(1);
+        });
+
+        if args.analyze {
+            println!(
+                "\nStego Analysis Report:\n\
+                \tImage dimensions: {}x{}, \
+                \n\tMax capacity: {} bytes, \
+                \n\tInput text length: {} bytes, \
+                \n\tEncrypted message length: {} bytes, \
+                \n\tPrefix length: {} bytes, \
+                \n\tTotal Payload length: {} bytes, \
+                \n\tAlgorithm: {:?}, \
+                \n\tCan fit: {}",
+
+                analysis.image_dimensions.0,
+                analysis.image_dimensions.1,
+                analysis.max_capacity_bytes,
+                analysis.input_text_len,
+                analysis.encrypted_len.unwrap_or(0),
+                analysis.prefix_overhead_bytes,
+                analysis.total_payload_bytes,
+                algo,
+                analysis.can_fit
+            );
+            std::process::exit(0);
+        }
+
+        if !analysis.can_fit {
+            eprintln!(
+                "Error: The message is too long to fit in the image. \
+                Max capacity: {} bytes, Message length: {} bytes",
+                analysis.max_capacity_bytes,
+                analysis.total_payload_bytes
+            );
+            std::process::exit(1);
+        }
+
+        println!(
+            "✅ Image dimensions: {}x{}, Max capacity: {} bytes, \
+            Message length: {} bytes, Algorithm: {:?}",
+            analysis.image_dimensions.0,
+            analysis.image_dimensions.1,
+            analysis.max_capacity_bytes,
+            analysis.input_text_len,
+            algo
+        );
+        
         let plain_msg = match &args.msg {
             Some(m) => m,
             None => {
@@ -30,12 +95,7 @@ fn main() {
             }
         };
 
-        let img = image::open(&args.img).unwrap_or_else(|e| {
-            eprintln!("Failed to open image: {e}");
-            std::process::exit(1);
-        });
-
-        if let Err(e) = stegano::embed::embed_message(
+                if let Err(e) = stegano::embed::embed_message(
             &img,
             &encrypted,
             args.prng,

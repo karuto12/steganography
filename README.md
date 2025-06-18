@@ -57,6 +57,12 @@ cargo test
 ```
 
 
+## Add cimg to your bin
+```Makefile
+make
+```
+- This will add cimg to your `PATH`. Now you can run cimg from anywhere.
+
 ## Try to decrypt my maessage
 ![my-message](noseed/thewillofd.png)
 - `hint`: `no...` hint for you (iykyk).

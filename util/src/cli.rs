@@ -4,7 +4,17 @@ use crate::crypto::Algorithm;
 
 /// 🔐 Embed secret messages in images using LSB steganography.
 #[derive(Parser, Debug)]
-#[clap(author, version, about, long_about = None)]
+#[clap(
+    name = "cimg",
+    version,
+    author = "Haridas Mahato <haridasmahato12@gmail.com>", 
+    about = "🔐 Cryimg: Hide messages in images using LSB steganography", 
+    long_about = Some(concat!(
+        "🔐 Cryimg: Hide messages in images using LSB steganography\n\
+         Author: Haridas Mahato <haridasmahato12@gmail.com>\n\
+         Version: ", env!("CARGO_PKG_VERSION"),)
+    ),
+)]
 #[command(group(
     ArgGroup::new("mode")
         .required(true)

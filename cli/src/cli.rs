@@ -62,8 +62,8 @@ pub struct Args {
 impl Args {
     pub fn algorithm(&self) -> Result<Algorithm, String> {
         match (&self.encrypt, &self.decrypt) {
-            (Some(e), None) => Ok(e.clone()),
-            (None, Some(d)) => Ok(d.clone()),
+            (Some(e), None) => Ok(*e),
+            (None, Some(d)) => Ok(*d),
             (Some(_), Some(_)) => Err("Cannot specify both --encrypt and --decrypt.".into()),
             (None, None) => Err("Either --encrypt or --decrypt must be specified.".into()),
         }

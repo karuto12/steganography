@@ -43,16 +43,16 @@ pub fn embed_message(
         let mut px = *img.get_pixel(x, y);
         let channels = px.channels_mut();
 
-        for i in 0..4 {
+        for channel in channels.iter_mut().take(4) {
             if let Some(bit) = bit_iter.next() {
-                channels[i] = (channels[i] & 0xFE) | (bit as u8);
+                *channel = (*channel & 0xFE) | (bit as u8);
             } else {
                 break;
             }
         }
 
         img.put_pixel(x, y, px);
-        if bit_iter.len() == 0 {
+        if bit_iter.next().is_none() {
             break;
         }
     }

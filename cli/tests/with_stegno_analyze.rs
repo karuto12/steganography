@@ -27,7 +27,7 @@ fn analyze_test_capacity_none() {
     let report = analyze_capacity(&img, message, algorithm, key).unwrap();
 
     assert_eq!(report.image_dimensions, (10, 10));
-    assert_eq!(report.max_capacity_bytes, 300 / 8 as usize);
+    assert_eq!(report.max_capacity_bytes, 300 / 8_usize);
     assert_eq!(report.input_text_len, 13);
     assert_eq!(report.encrypted_len, None);
     assert_eq!(report.algorithm, Algorithm::None);
@@ -50,7 +50,7 @@ fn analyze_test_capacity_xor() {
     let report = analyze_capacity(&img, message, algorithm, key).unwrap();
 
     assert_eq!(report.image_dimensions, (10, 10));
-    assert_eq!(report.max_capacity_bytes, 300 / 8 as usize);
+    assert_eq!(report.max_capacity_bytes, 300 / 8_usize);
     assert_eq!(report.input_text_len, 14);
     assert!(report.encrypted_len.is_some());
     assert_eq!(report.algorithm, Algorithm::Xor);
@@ -73,7 +73,7 @@ fn analyze_test_capacity_aes() {
     let report = analyze_capacity(&img, message, algorithm, key).unwrap();
 
     assert_eq!(report.image_dimensions, (10, 10));
-    assert_eq!(report.max_capacity_bytes, 300 / 8 as usize);
+    assert_eq!(report.max_capacity_bytes, 300 / 8_usize);
     assert_eq!(report.input_text_len, 14);
     assert_eq!(report.encrypted_len, Some(44));
     assert_eq!(report.algorithm, Algorithm::Aes);
@@ -96,7 +96,7 @@ fn analyze_test_capacity_aes_long_message() {
     let report = analyze_capacity(&img, message, algorithm, key).unwrap();
 
     assert_eq!(report.image_dimensions, (10, 10));
-    assert_eq!(report.max_capacity_bytes, 300 / 8 as usize);
+    assert_eq!(report.max_capacity_bytes, 300 / 8_usize);
     assert_eq!(report.input_text_len, message.len());
     assert!(report.encrypted_len.is_some());
     assert_eq!(report.algorithm, Algorithm::Aes);
@@ -119,7 +119,7 @@ fn analyze_test_capacity_xor_long_message() {
     let report = analyze_capacity(&img, message, algorithm, key).unwrap();
 
     assert_eq!(report.image_dimensions, (10, 10));
-    assert_eq!(report.max_capacity_bytes, 300 / 8 as usize);
+    assert_eq!(report.max_capacity_bytes, 300 / 8_usize);
     assert_eq!(report.input_text_len, message.len());
     assert!(report.encrypted_len.is_some());
     assert_eq!(report.algorithm, Algorithm::Xor);

@@ -161,7 +161,7 @@ mod tests {
         assert!(encrypted.is_err());
         assert_eq!(encrypted.unwrap_err(), "Key must be a number for Caesar cipher");
 
-        let decrypted = decrypt_message(&msg, key, algo);
+        let decrypted = decrypt_message(msg, key, algo);
         assert!(decrypted.is_err());
         assert_eq!(decrypted.unwrap_err(), "Key must be a number for Caesar cipher");
     }

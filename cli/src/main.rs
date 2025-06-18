@@ -17,7 +17,7 @@ fn main() {
         Some(string_to_seed(&args.seed))
     };
 
-    if let Some(_) = args.encrypt {
+    if args.encrypt.is_some() {
         // Encrypt mode
         let img = image::open(&args.img).unwrap_or_else(|e| {
             eprintln!("Failed to open image: {e}");
@@ -86,7 +86,7 @@ fn main() {
                 std::process::exit(1);
             }
         };
-        let encrypted = match encrypt_message(&plain_msg, args.key.as_deref().unwrap_or(""), algo) {
+        let encrypted = match encrypt_message(plain_msg, args.key.as_deref().unwrap_or(""), algo) {
             Ok(msg) => msg,
             Err(e) => {
                 eprintln!("Encryption failed: {e}");
@@ -106,7 +106,7 @@ fn main() {
         }
 
         println!("✅ Message embedded into {}", args.out);
-    } else if let Some(_) = args.decrypt {
+    } else if args.decrypt.is_some() {
         // Decrypt mode
         let stego_img = image::open(&args.img).unwrap_or_else(|e| {
             eprintln!("Failed to open stego image: {e}");

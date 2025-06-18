@@ -1,5 +1,6 @@
 use aes::Aes256;
-use block_modes::{Cbc, block_padding::Pkcs7, BlockMode};
+use block_modes::{Cbc, BlockMode};
+use block_modes::block_padding::Pkcs7;
 use sha2::{Sha256, Digest};
 use base64::{engine::general_purpose, Engine as _};
 

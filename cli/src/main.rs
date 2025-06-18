@@ -1,11 +1,10 @@
-use clap::Parser;
-
-use util::{
-    cli::{Args}, 
+use cryimg_core::{
     crypto::{encrypt_message, decrypt_message}, 
     stegano, 
     utils::string_to_seed
 };
+use cli::cli::Args;
+use clap::Parser;
 
 fn main() {
     let args = Args::parse();
@@ -141,5 +140,3 @@ fn main() {
     }
 
 }
-
-

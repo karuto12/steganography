@@ -1,5 +1,5 @@
 use clap::{Parser, ArgGroup};
-use crate::crypto::Algorithm;
+use cryimg_core::crypto::Algorithm;
 
 
 /// 🔐 Embed secret messages in images using LSB steganography.

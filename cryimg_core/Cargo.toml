@@ -1,15 +1,14 @@
 [package]
-name = "util"
-version = "1.0.0"
+name = "cryimg_core"
+version = "0.1.0"
 edition = "2024"
 
 [dependencies]
 aes = "0.7"
 base64 = "0.22.1"
 block-modes = "0.8"
-clap = { version = "4.5.40", features = ["derive"] }
+clap = {version = "4.5.40", features = ["derive"]}
 image = "0.25.6"
 rand = "0.9.1"
 rand_chacha = "0.9.0"
 sha2 = "0.10.9"
-
